@@ -2,6 +2,7 @@ from pathlib import Path
 from itertools import count
 import pickle
 import re
+import os
 
 
 def get_saving_filename_safely(save_filedir):
@@ -24,6 +25,11 @@ def get_saving_filename_safely(save_filedir):
         s = re.sub(r"(-\d+)?\.pkl", "", save_filedir.name)
         s = f"{s}-{next(counter)}.pkl"
         save_filedir = save_filedir.parent / s
+
+    # check whether path writable
+    with open(save_filedir, 'wb') as f:
+        pickle.dump([], f)  # If it fails, given filepath is not writeable.
+
     return save_filedir
 
 
