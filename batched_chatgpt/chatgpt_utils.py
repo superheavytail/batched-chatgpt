@@ -65,18 +65,16 @@ def batched_multiprocess_auto_retry(items, model_name, chunk_size, timeout_each,
         remain_indices, remain_items = list(zip(*remain_inputs))
         chunks = [remain_items[i:i + chunk_size] for i in range(0, len(remain_items), chunk_size)]  # re-chunk remains
 
-        all_results = []
-        for chunk in tqdm(chunks):  # tqdm num is the num of chunks
-            result = process_chunk(chunk, model_name, timeout_each)
-            result = map(lambda x: x.content if x else None, result)
-            all_results.extend(result)
-        for i in range(len(remain_items)):
-            outputs[remain_indices[i]] = all_results[i]
+        for i, chunk in enumerate(tqdm(chunks, "Batches")):  # tqdm num is the num of chunks
+            results = process_chunk(chunk, model_name, timeout_each)
+            results = list(map(lambda x: x.content if x else None, results))
+            for j, result in enumerate(results):
+                outputs[remain_indices[i * chunk_size + j]] = result
 
-        # save the outputs which may be incomplete
-        pickle_bobj(outputs, pkl_path) if pkl_path else None
+            # save the outputs which may be incomplete
+            pickle_bobj(outputs, pkl_path) if pkl_path else None
 
-        time.sleep(sleep_between_chunk)
+            time.sleep(sleep_between_chunk) if not all(outputs) else ...
     return outputs
 
 
