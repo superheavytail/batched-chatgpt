@@ -15,7 +15,7 @@ def get_saving_filename_safely(save_filedir):
     must be saved with '.pkl' extension."""
     # force .pkl extension
     save_filedir = Path(save_filedir)
-    assert save_filedir.name.endswith('.pkl')
+    assert save_filedir.name.endswith('.pkl'), 'savefile name must be .pkl file.'
 
     # try to find available filename iteratively. (like asdf.txt, asdf-1.txt, asdf-2.txt, ...)
     if re.findall(r".+-(\d+)\.pkl", save_filedir.name):
