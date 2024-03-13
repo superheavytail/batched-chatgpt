@@ -1,6 +1,5 @@
 from pathlib import Path
 from itertools import count
-from typing import List
 import pickle
 import re
 
@@ -40,14 +39,4 @@ def load_bobj(save_filedir):
     with open(save_filedir, 'rb') as f:
         bobj = pickle.load(f)
     return bobj
-
-
-def deduplicate_instruction_answer(l: List[dict]):
-    """deduplicate by instruction"""
-    df = pd.DataFrame({
-        'instruction': [e['instruction'] for e in l],
-        'answer': [e['answer'] for e in l]
-    })
-    df.drop_duplicates(subset='instruction', inplace=True)
-    return df.to_dict(orient='records')
 
