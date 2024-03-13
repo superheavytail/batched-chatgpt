@@ -3,8 +3,6 @@ from itertools import count
 import pickle
 import re
 
-import pandas as pd
-
 
 def get_saving_filename_safely(save_filedir):
     """find available filename iteratively.

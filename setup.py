@@ -11,6 +11,6 @@ setup(
         'langchain',
         'langchain-openai',
         'tqdm',
-        'openai'
+        'openai',
     ],
 )
