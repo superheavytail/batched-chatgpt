@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="batched_chatgpt",
-    version="0.0.2",
+    version="0.0.3",
     description="Easy calling chatgpt with batched instances",
     packages=find_packages(),
     author="superheavytail",
