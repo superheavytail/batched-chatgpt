@@ -2,15 +2,6 @@
 Extremely **easy-to-use ChatGPT** batched API caller.  
 It only supports single turn conversation!
 
-### Features
-- Autosaves the responses if pkl_path is specified. (auto-detect new filename and use pickle to save)
-    - Autosaves per single API call
-    - saves like ```['blabla', 'blablabla', None, None, None, ...]``` and ```None``` is a placeholder not responded by ChatGPT.
-    - That means, no ```None``` will be returned if everything goes well.
-- Auto retry with customizable timeout.
-- Customizable chunk size, and auto multiprocessing.
-- Reserving the order of input list.
-
 ## Installation
 ```bash
 pip install batched-chatgpt
@@ -21,6 +12,11 @@ It requires ```OPENAI_API_KEY``` in your environment variable.
 ```bash
 export OPENAI_API_KEY=<your_api_key>
 ```
+Or in python code,  
+```python
+import os
+os.environ['OPENAI_API_KEY'] = "<your_api_key>"
+```
 ### Simple version
 ```python
 from batched_chatgpt import call_chatgpt
@@ -29,6 +25,15 @@ resp = call_chatgpt(
     human_message=PROMPTS,  # list of str
 )
 ```
+
+## Features
+- Autosaves the responses if pkl_path is specified. (auto-detect new filename and use pickle to save)
+    - Autosaves per single API call
+    - saves like ```['blabla', 'blablabla', None, None, None, ...]``` and ```None``` is a placeholder not responded by ChatGPT.
+    - That means, no ```None``` will be returned if everything goes well.
+- Auto retry with customizable timeout.
+- Customizable chunk size, and auto multiprocessing.
+- Reserving the order of input list.
 
 ### Need more customization?
 ```python
