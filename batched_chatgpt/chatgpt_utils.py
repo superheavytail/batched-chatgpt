@@ -12,19 +12,19 @@ from langchain.schema.messages import HumanMessage, SystemMessage
 from .utils import pickle_bobj, get_saving_filename_safely
 
 
-def process_chunk_element(i, queue, item, model_name):
-    chat = ChatOpenAI(model=model_name, temperature=0)
+def process_chunk_element(i, queue, item, model_name, temperature):
+    chat = ChatOpenAI(model=model_name, temperature=temperature)
     res = chat.invoke(item)
     queue.put((i, res))
 
 
-def process_chunk(chunk, model_name, timeout=13):
+def process_chunk(chunk, model_name, temperature, timeout=13):
     processes = []
     output_queue = Queue()
     results = [None] * len(chunk)  # Pre-allocate list for results
 
     for i, item in enumerate(chunk):
-        p = Process(target=process_chunk_element, args=(i, output_queue, item, model_name))
+        p = Process(target=process_chunk_element, args=(i, output_queue, item, model_name, temperature))
         processes.append(p)
         p.start()
         time.sleep(0.2)  # restrict too dense api calling
@@ -47,7 +47,15 @@ def process_chunk(chunk, model_name, timeout=13):
     return results
 
 
-def batched_multiprocess_auto_retry(items, model_name, chunk_size, timeout_each, sleep_between_chunk, pkl_path, verbose=False):
+def batched_multiprocess_auto_retry(
+        items,
+        model_name,
+        temperature,
+        chunk_size,
+        timeout_each,
+        sleep_between_chunk,
+        pkl_path,
+        verbose=False):
     """returns list of chatgpt output string
 
     timeout-ed output be None"""
@@ -66,7 +74,7 @@ def batched_multiprocess_auto_retry(items, model_name, chunk_size, timeout_each,
         chunks = [remain_items[i:i + chunk_size] for i in range(0, len(remain_items), chunk_size)]  # re-chunk remains
 
         for i, chunk in enumerate(tqdm(chunks, "Batches")):  # tqdm num is the num of chunks
-            results = process_chunk(chunk, model_name, timeout_each)
+            results = process_chunk(chunk, model_name, temperature, timeout_each)
             results = list(map(lambda x: x.content if x else None, results))
             for j, result in enumerate(results):
                 outputs[remain_indices[i * chunk_size + j]] = result
@@ -82,6 +90,7 @@ def call_chatgpt(
         human_message: List[str],
         system_message: Union[str, List[str]] = "You're a helpful assistant",
         model_name: str = "gpt-3.5-turbo",
+        temperature: float = 0.0,
         chunk_size: int = 20,
         timeout_each: int = 60,
         sleep_between_chunk: int = 10,
@@ -93,6 +102,7 @@ def call_chatgpt(
     :param human_message: list of human message
     :param system_message: list of system prompt. It can be a str or a list of str that has same length to human_message
     :param model_name: ChatGPT API name ("gpt-4-1106-preview")
+    :param temperature: Controls randomness of the generated text
     :param chunk_size: The number of examples which send in one batch
     :param timeout_each: API call timeout
     :param sleep_between_chunk: sleep time between batches
@@ -116,5 +126,5 @@ def call_chatgpt(
     ] for i in range(len(system_message))]
 
     resp = batched_multiprocess_auto_retry(
-        messages_list, model_name, chunk_size, timeout_each, sleep_between_chunk, pkl_path, verbose)
+        messages_list, model_name, temperature, chunk_size, timeout_each, sleep_between_chunk, pkl_path, verbose)
     return resp
