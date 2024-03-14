@@ -43,6 +43,7 @@ resp = call_chatgpt(
     human_message=PROMPTS,  # list of str
     system_message=['You are a helpful assistant.'] * len(prompts),
     model_name=CHATGPT_VERSION_NAME,  # default is 'gpt-3.5-turbo'
+    temperature=TEMPERATURE,  # default 0.0
     chunk_size=CHATGPT_CHUNK_SIZE,
     timeout_each=TIMEOUT_EACH,
     sleep_between_chunk=SLEEP_BETWEEN_CHUNK,
@@ -53,6 +54,7 @@ resp = call_chatgpt(
 - ```human_message```: list of human message
 - ```system_message```: list of system prompt. It can be a str or a list of str that has same length to human_message
 - ```model_name```: ChatGPT API name (ex: "gpt-4-1106-preview")
+- ```temperature```: Controls randomness of the generated text
 - ```chunk_size```: The number of examples which send in one batch
 - ```timeout_each```: API call timeout
 - ```sleep_between_chunk```: sleep time between batches
