@@ -61,6 +61,9 @@ resp = call_chatgpt(
 - ```pkl_path```: Specifies the path where output will be saved. By default, outputs are not saved.
 - ```verbose```: If true, debugging message will be printed.
 
+## Warning
+- Currently, no retry count limit is set. So, It should be manually stopped if the API is failed repeatedly. (Will be fixed soon)
+
 ## Requirements
 - langchain
 - langchain-openai
