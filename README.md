@@ -44,7 +44,7 @@ resp = call_chatgpt(
     system_message=['You are a helpful assistant.'] * len(prompts),
     model_name=CHATGPT_VERSION_NAME,  # default is 'gpt-3.5-turbo'
     temperature=TEMPERATURE,  # default 0.0
-    chunk_size=CHATGPT_CHUNK_SIZE,
+    chunk_size=CONCURRENCY_NUM,
     timeout_each=TIMEOUT_EACH,
     sleep_between_chunk=SLEEP_BETWEEN_CHUNK,
     pkl_path=file_dir,  # ex) "result.pkl'
@@ -55,14 +55,11 @@ resp = call_chatgpt(
 - ```system_message```: list of system prompt. It can be a str or a list of str that has same length to human_message
 - ```model_name```: ChatGPT API name (ex: "gpt-4-1106-preview")
 - ```temperature```: Controls randomness of the generated text
-- ```chunk_size```: The number of examples which send in one batch
-- ```timeout_each```: API call timeout
+- ```chunk_size```: The number of examples which simultaneously send in one batch
+- ```timeout_each```: API call timeout (for each batch)
 - ```sleep_between_chunk```: sleep time between batches
 - ```pkl_path```: Specifies the path where output will be saved. By default, outputs are not saved.
 - ```verbose```: If true, debugging message will be printed.
-
-## Warning
-- Currently, no retry count limit is set. So, It should be manually stopped if the API is failed repeatedly. (Will be fixed soon)
 
 ## Requirements
 - langchain

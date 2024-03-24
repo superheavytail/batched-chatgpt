@@ -2,6 +2,8 @@ from typing import List, Union
 from pprint import pprint
 from multiprocessing import Queue, Process
 from pathlib import Path
+from logging import getLogger
+from itertools import count
 import time
 import os
 
@@ -10,6 +12,9 @@ from langchain_openai import ChatOpenAI
 from langchain.schema.messages import HumanMessage, SystemMessage
 
 from .utils import pickle_bobj, get_saving_filename_safely
+
+
+logger = getLogger(__name__)
 
 
 def process_chunk_element(i, queue, item, model_name, temperature):
@@ -62,6 +67,7 @@ def batched_multiprocess_auto_retry(
     pkl_path = get_saving_filename_safely(pkl_path) if pkl_path else None  # if pkl_path, result saved.
 
     outputs = [None] * len(items)
+    c = count()
     while not all(outputs):
         # printing remained queries if the number of remained queries is small
         num_of_remains = outputs.count(None)
@@ -83,6 +89,10 @@ def batched_multiprocess_auto_retry(
             pickle_bobj(outputs, pkl_path) if pkl_path else None
 
             time.sleep(sleep_between_chunk) if not all(outputs) else ...
+
+        # display a warning message if the global retry count exceeds 5.
+        if next(c) >= 5:
+            logger.warning("Retry count has exceeds 5. The process may be stuck due to an unresponsive item.")
     return outputs
 
 
