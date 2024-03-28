@@ -69,6 +69,13 @@ def batched_multiprocess_auto_retry(
     outputs = [None] * len(items)
     c = count()
     while not all(outputs):
+        retry_count = next(c)
+        if retry_count > 0:
+            logger.info("There exists failed API call. Retrying...")
+        # display a warning message if the global retry count exceeds 5.
+        if retry_count >= 5:
+            logger.warning("Retry count has exceeds 5. The process may be stuck due to an unresponsive item.")
+
         # printing remained queries if the number of remained queries is small
         num_of_remains = outputs.count(None)
         print(f"num of remains: {num_of_remains}") if verbose else ...
@@ -89,10 +96,6 @@ def batched_multiprocess_auto_retry(
             pickle_bobj(outputs, pkl_path) if pkl_path else None
 
             time.sleep(sleep_between_chunk) if not all(outputs) else ...
-
-        # display a warning message if the global retry count exceeds 5.
-        if next(c) >= 5:
-            logger.warning("Retry count has exceeds 5. The process may be stuck due to an unresponsive item.")
     return outputs
 
 
