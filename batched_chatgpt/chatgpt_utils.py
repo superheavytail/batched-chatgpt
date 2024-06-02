@@ -93,7 +93,7 @@ def batched_multiprocess_auto_retry(
                 outputs[remain_indices[i * chunk_size + j]] = result
 
             # save the outputs which may be incomplete
-            pickle_bobj(outputs, pkl_path) if pkl_path else None
+            pickle_bobj({'prompts': items, 'completions': outputs}, pkl_path) if pkl_path else None
 
             time.sleep(sleep_between_chunk) if not all(outputs) else ...
     return outputs
