@@ -2,7 +2,6 @@ from pathlib import Path
 from itertools import count
 import pickle
 import re
-import os
 
 
 def get_saving_filename_safely(save_filedir):
@@ -17,8 +16,10 @@ def get_saving_filename_safely(save_filedir):
 
     # try to find available filename iteratively. (like asdf.txt, asdf-1.txt, asdf-2.txt, ...)
     if re.findall(r".+-(\d+)\.pkl", save_filedir.name):
-        current_num = re.findall(r".+-(\d+)\.pkl", save_filedir.name)[0]
-        counter = count(current_num + 1)
+        # current_num = re.findall(r".+-(\d+)\.pkl", save_filedir.name)[0]
+        # counter = count(current_num + 1)
+        raise ValueError("You cannot use '-' in pkl_path! "
+                         "(since it is reserved for increasing filenum like 'a.pkl', 'a-2.pkl', 'a-3.pkl', ...")
     else:
         counter = count(2)  # increasing integer generator from 2
     while Path(save_filedir).exists():
