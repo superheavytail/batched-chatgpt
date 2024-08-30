@@ -22,6 +22,7 @@ def get_saving_filename_safely(save_filedir):
                          "(since it is reserved for increasing filenum like 'a.pkl', 'a-2.pkl', 'a-3.pkl', ...")
     else:
         counter = count(2)  # increasing integer generator from 2
+    save_filedir.parent.mkdir(exist_ok=True, parents=True)
     while Path(save_filedir).exists():
         s = re.sub(r"(-\d+)?\.pkl", "", save_filedir.name)
         s = f"{s}-{next(counter)}.pkl"
